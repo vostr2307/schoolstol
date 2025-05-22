@@ -1,5 +1,5 @@
-// LoginPage.jsx
 import React, { useState } from 'react';
+import { API_URL } from './config'; // Импорт переменной API_URL
 
 export default function LoginPage({ onLogin }) {
   const [login, setLogin] = useState('');
@@ -10,7 +10,7 @@ export default function LoginPage({ onLogin }) {
     e.preventDefault();
     setError(null);
     try {
-      const res = await fetch('/login', {
+      const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login, password })
