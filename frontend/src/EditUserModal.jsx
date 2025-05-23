@@ -9,7 +9,7 @@ export default function EditUserModal({ user, onClose }) {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch('/departments')
+    fetch('https://schoolstol.onrender.com/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
@@ -21,7 +21,7 @@ export default function EditUserModal({ user, onClose }) {
       department_id,
       ...(password && { password })
     };
-    await fetch(`/users/${user.id}`, {
+    await fetch(`https://schoolstol.onrender.com/users/${user.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updated)
