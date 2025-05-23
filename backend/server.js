@@ -179,11 +179,11 @@ app.post('/user-data', async (req, res) => {
 });
 // Получить список блюд по категории
 app.get('/dishes', async (req, res) => {
-  const { category } = req.query;
+  const { category, department_id } = req.query;
   try {
     const result = await pool.query(
-      SELECT id, name, price, category FROM dishes WHERE category = $1 ORDER BY name,
-      [category]
+      SELECT id, name, price, category FROM dishes WHERE category = $1 AND department_id = $2 ORDER BY name,
+      [category, department_id]
     );
     res.json(result.rows);
   } catch (err) {
@@ -193,16 +193,16 @@ app.get('/dishes', async (req, res) => {
 
 // Добавление блюда пользователем
 app.post('/dishes/add', async (req, res) => {
-  const { name, price, category } = req.body;
+  const { name, price, category, department_id } = req.body;
 
-  if (!name || !category) {
-    return res.status(400).json({ error: 'Укажите название и категорию блюда' });
+  if (!name || !category || !department_id) {
+    return res.status(400).json({ error: 'Необходимо указать название, категорию и подразделение' });
   }
 
   try {
     const result = await pool.query(
-      INSERT INTO dishes (name, price, category) VALUES ($1, $2, $3) RETURNING id,
-      [name, price || 0, category]
+      INSERT INTO dishes (name, price, category, department_id) VALUES ($1, $2, $3, $4) RETURNING id,
+      [name, price || 0, category, department_id]
     );
     res.json({ message: 'Блюдо добавлено', id: result.rows[0].id });
   } catch (err) {
