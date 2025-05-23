@@ -221,7 +221,7 @@ app.put('/dishes/:id', async (req, res) => {
 
   try {
     await pool.query(
-      UPDATE dishes SET name = $1, price = $2, category = $3 WHERE id = $4,
+      'UPDATE dishes SET name = $1, price = $2, category = $3 WHERE id = $4',
       [name, price || 0, category, id]
     );
     res.json({ message: 'Блюдо обновлено' });
