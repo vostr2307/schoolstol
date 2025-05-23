@@ -26,14 +26,14 @@ export default function App({ user, onLogout }) {
   }, [user.department_id]);
 
   useEffect(() => {
-    fetch(API_URL + `/user-data?department_id=${user.department_id}&date=${date}`)
+    fetch(`/user-data?department_id=${user.department_id}&date=${date}`)
       .then(res => res.json())
       .then(setData);
   }, [user.department_id, date]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      fetch(API_URL + '/user-data', {
+      fetch('/user-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ department_id: user.department_id, date, ...data })
