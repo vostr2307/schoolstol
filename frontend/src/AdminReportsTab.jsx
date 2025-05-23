@@ -6,7 +6,7 @@ export default function AdminReportsTab() {
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
-    fetch(`/reports?date=${date}`)
+    fetch(`https://schoolstol.onrender.com/reports?date=${date}`)
       .then(res => res.json())
       .then(setReports);
   }, [date]);
