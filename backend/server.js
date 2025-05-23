@@ -177,6 +177,20 @@ app.post('/user-data', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Получить список блюд по категории
+app.get('/dishes', async (req, res) => {
+  const { category } = req.query;
+  try {
+    const result = await pool.query(
+      SELECT id, name, price, category FROM dishes WHERE category = $1 ORDER BY name,
+      [category]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Добавление блюда пользователем
 app.post('/dishes/add', async (req, res) => {
   const { name, price, category } = req.body;
@@ -206,7 +220,7 @@ app.put('/dishes/:id', async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
+    await pool.query(
       UPDATE dishes SET name = $1, price = $2, category = $3 WHERE id = $4,
       [name, price || 0, category, id]
     );
