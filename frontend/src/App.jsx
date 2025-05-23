@@ -17,7 +17,7 @@ export default function App({ user, onLogout }) {
   });
 
   useEffect(() => {
-    fetch('/departments')
+    fetch('https://schoolstol.onrender.com/departments')
       .then(res => res.json())
       .then(deps => {
         const dep = deps.find(d => d.id === user.department_id);
@@ -26,14 +26,14 @@ export default function App({ user, onLogout }) {
   }, [user.department_id]);
 
   useEffect(() => {
-    fetch(`/user-data?department_id=${user.department_id}&date=${date}`)
+    fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`)
       .then(res => res.json())
       .then(setData);
   }, [user.department_id, date]);
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      fetch('/user-data', {
+      fetch('https://schoolstol.onrender.com/user-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ department_id: user.department_id, date, ...data })
