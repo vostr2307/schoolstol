@@ -8,7 +8,7 @@ export default function AdminUsersTab() {
   const [editingUser, setEditingUser] = useState(null);
 
   const loadUsers = () => {
-    fetch('/users')
+    fetch(API_URL + '/users')
       .then(res => res.json())
       .then(setUsers);
   };
