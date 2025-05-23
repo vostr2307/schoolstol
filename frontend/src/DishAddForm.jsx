@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API_URL } from '../config';
+import { API_URL } from './config';
 
 const categoryLabels = {
   kitchen: 'Кухня',
@@ -9,6 +9,9 @@ const categoryLabels = {
 };
 
 export default function DishAddForm() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const departmentId = user?.department_id;
+
   const [dishes, setDishes] = useState([]);
   const [category, setCategory] = useState('kitchen');
   const [name, setName] = useState('');
@@ -16,7 +19,8 @@ export default function DishAddForm() {
   const [editing, setEditing] = useState(null);
 
   const loadDishes = async () => {
-    const res = await fetch(${API_URL}/dishes?category=${category});
+    if (!departmentId) return;
+    const res = await fetch(${API_URL}/dishes?category=${category}&department_id=${departmentId});
     const data = await res.json();
     setDishes(data);
   };
@@ -26,8 +30,8 @@ export default function DishAddForm() {
   }, [category]);
 
   const handleSubmit = async () => {
-    if (!name.trim()) return;
-    const payload = { name, price: parseFloat(price) || 0, category };
+    if (!name.trim() || !departmentId) return;
+    const payload = { name, price: parseFloat(price) || 0, category, department_id: departmentId };
 
     if (editing) {
       await fetch(${API_URL}/dishes/${editing}, {
