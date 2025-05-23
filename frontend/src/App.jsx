@@ -17,7 +17,7 @@ export default function App({ user, onLogout }) {
   });
 
   useEffect(() => {
-    fetch(API_URL + '/departments')
+    fetch('/departments')
       .then(res => res.json())
       .then(deps => {
         const dep = deps.find(d => d.id === user.department_id);
