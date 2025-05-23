@@ -1,5 +1,6 @@
 // ReferenceTab.jsx
 import React, { useState, useEffect } from 'react';
+import { API_URL } from './config';
 
 export default function ReferenceTab() {
   const [category, setCategory] = useState('kitchen');
@@ -8,7 +9,7 @@ export default function ReferenceTab() {
   const [newPrice, setNewPrice] = useState('');
 
   const fetchDishes = () => {
-    fetch(`https://schoolstol.onrender.com/dishes?category=${category}`)
+    fetch(${API_URL}/dishes?category=${category})
       .then(res => res.json())
       .then(setDishes);
   };
@@ -19,7 +20,7 @@ export default function ReferenceTab() {
 
   const handleAdd = async () => {
     if (!newName || !newPrice) return;
-    await fetch('https://schoolstol.onrender.com/dishes', {
+    await fetch(${API_URL}/dishes, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice) })
@@ -31,7 +32,7 @@ export default function ReferenceTab() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
-    await fetch(`https://schoolstol.onrender.com/dishes/${id}`, { method: 'DELETE' });
+    await fetch(${API_URL}/dishes/${id}, { method: 'DELETE' });
     fetchDishes();
   };
 
@@ -49,8 +50,10 @@ export default function ReferenceTab() {
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className={`px-3 py-1 rounded ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-          >{label}</button>
+            className={px-3 py-1 rounded ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}}
+          >
+            {label}
+          </button>
         ))}
       </div>
 
