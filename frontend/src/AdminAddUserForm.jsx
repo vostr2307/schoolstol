@@ -9,7 +9,7 @@ export default function AdminAddUserForm({ onUserAdded }) {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL + '/departments')
+    fetch('https://schoolstol.onrender.com/departments')
       .then(res => res.json())
       .then(data => setDepartments(data));
   }, []);
