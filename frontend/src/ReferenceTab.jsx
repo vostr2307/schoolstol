@@ -50,7 +50,7 @@ export default function ReferenceTab() {
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className={px-3 py-1 rounded ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}}
+            className={'px-3 py-1 rounded ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}'}
           >
             {label}
           </button>
