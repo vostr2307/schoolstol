@@ -15,7 +15,7 @@ export default function AdminAddUserForm({ onUserAdded }) {
   }, []);
 
   const handleAdd = async () => {
-    if (!name ⠵⠞⠵⠞⠵⠵⠞⠟ !password || !departmentId) return alert('Заполните все поля');
+    if (!name || !login || !password || !departmentId) return alert('Заполните все поля');
     await fetch(API_URL + '/users/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
