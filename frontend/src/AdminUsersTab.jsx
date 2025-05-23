@@ -8,7 +8,7 @@ export default function AdminUsersTab() {
   const [editingUser, setEditingUser] = useState(null);
 
   const loadUsers = () => {
-    fetch(API_URL + '/users')
+    fetch('/users')
       .then(res => res.json())
       .then(setUsers);
   };
@@ -19,7 +19,7 @@ export default function AdminUsersTab() {
 
   const deleteUser = async (id) => {
     if (!window.confirm('Удалить пользователя?')) return;
-    await fetch(API_URL + `/users/${id}`, { method: 'DELETE' });
+    await fetch(`/users/${id}`, { method: 'DELETE' });
     loadUsers();
   };
 
