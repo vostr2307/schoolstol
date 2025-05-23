@@ -9,7 +9,7 @@ export default function EditUserModal({ user, onClose }) {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch('/departments')
+    fetch(API_URL + '/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
