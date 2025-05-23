@@ -20,10 +20,12 @@ export default function ReferenceTab() {
 
   const handleAdd = async () => {
     if (!newName || !newPrice) return;
+    const department_id = JSON.parse(localStorage.getItem('user'))?.department_id;
+    if (!department_id) return alert('Ошибка: не найден department_id');
     await fetch(${API_URL}/dishes, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice) })
+      body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice), department_id })
     });
     setNewName('');
     setNewPrice('');
