@@ -9,7 +9,7 @@ export default function AdminInventoryTab() {
   const [filename, setFilename] = useState('');
 
   useEffect(() => {
-    fetch(API_URL + '/departments')
+    fetch('/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
