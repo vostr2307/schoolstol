@@ -10,7 +10,7 @@ export default function AdminStatsTab() {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch('/departments')
+    fetch('https://schoolstol.onrender.com/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
