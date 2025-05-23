@@ -9,14 +9,14 @@ export default function AdminAddUserForm({ onUserAdded }) {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL + '/departments')
+    fetch('/departments')
       .then(res => res.json())
       .then(data => setDepartments(data));
   }, []);
 
   const handleAdd = async () => {
     if (!name || !login || !password || !departmentId) return alert('Заполните все поля');
-    await fetch(API_URL + '/users/add', {
+    await fetch('/users/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, login, password, department_id: departmentId })
