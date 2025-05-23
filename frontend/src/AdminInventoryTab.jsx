@@ -15,7 +15,7 @@ export default function AdminInventoryTab() {
   }, []);
 
   const generate = async () => {
-    const res = await fetch(`/inventory?department_id=${department_id}&start=${start}&end=${end}`);
+    const res = await fetch(API_URL + `/inventory?department_id=${department_id}&start=${start}&end=${end}`);
     const result = await res.json();
     setFilename(result.filename);
   };
