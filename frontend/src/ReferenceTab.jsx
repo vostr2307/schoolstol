@@ -9,7 +9,7 @@ export default function ReferenceTab() {
   const [newPrice, setNewPrice] = useState('');
 
   const fetchDishes = () => {
-    fetch(${API_URL}/dishes?category=${category})
+    fetch('https://schoolstol.onrender.com/dishes?category=${category}')
       .then(res => res.json())
       .then(setDishes);
   };
@@ -22,10 +22,10 @@ export default function ReferenceTab() {
     if (!newName || !newPrice) return;
     const department_id = JSON.parse(localStorage.getItem('user'))?.department_id;
     if (!department_id) return alert('Ошибка: не найден department_id');
-    await fetch(${API_URL}/dishes, {
+    await fetch('https://schoolstol.onrender.com/dishes, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice), department_id })
+      body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice), department_id }')
     });
     setNewName('');
     setNewPrice('');
@@ -34,7 +34,7 @@ export default function ReferenceTab() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
-    await fetch(${API_URL}/dishes/${id}, { method: 'DELETE' });
+    await fetch('https://schoolstol.onrender.com/dishes/${id}, { method: 'DELETE' }');
     fetchDishes();
   };
 
