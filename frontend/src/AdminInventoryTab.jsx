@@ -9,7 +9,7 @@ export default function AdminInventoryTab() {
   const [filename, setFilename] = useState('');
 
   useEffect(() => {
-    fetch('/departments')
+    fetch('https://schoolstol.onrender.com/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
