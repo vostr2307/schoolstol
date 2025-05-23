@@ -8,7 +8,7 @@ export default function ReferenceTab() {
   const [newPrice, setNewPrice] = useState('');
 
   const fetchDishes = () => {
-    fetch(API_URL + `/dishes?category=${category}`)
+    fetch(`/dishes?category=${category}`)
       .then(res => res.json())
       .then(setDishes);
   };
