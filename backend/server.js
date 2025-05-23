@@ -201,7 +201,7 @@ app.post('/dishes/add', async (req, res) => {
 
   try {
     const result = await pool.query(
-      INSERT INTO dishes (name, price, category, department_id) VALUES ($1, $2, $3, $4) RETURNING id,
+      'INSERT INTO dishes (name, price, category, department_id) VALUES ($1, $2, $3, $4) RETURNING id',
       [name, price || 0, category, department_id]
     );
     res.json({ message: 'Блюдо добавлено', id: result.rows[0].id });
