@@ -235,7 +235,7 @@ app.delete('/dishes/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    await pool.query(DELETE FROM dishes WHERE id = $1, [id]);
+    await pool.query('DELETE FROM dishes WHERE id = $1', [id]);
     res.json({ message: 'Блюдо удалено' });
   } catch (err) {
     res.status(500).json({ error: err.message });
