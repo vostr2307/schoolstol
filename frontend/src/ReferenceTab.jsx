@@ -8,7 +8,7 @@ export default function ReferenceTab() {
   const [newPrice, setNewPrice] = useState('');
 
   const fetchDishes = () => {
-    fetch(`/dishes?category=${category}`)
+    fetch(`https://schoolstol.onrender.com/dishes?category=${category}`)
       .then(res => res.json())
       .then(setDishes);
   };
@@ -19,7 +19,7 @@ export default function ReferenceTab() {
 
   const handleAdd = async () => {
     if (!newName || !newPrice) return;
-    await fetch('/dishes', {
+    await fetch('https://schoolstol.onrender.com/dishes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ category, name: newName, price: parseFloat(newPrice) })
@@ -31,7 +31,7 @@ export default function ReferenceTab() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
-    await fetch(`/dishes/${id}`, { method: 'DELETE' });
+    await fetch(`https://schoolstol.onrender.com/dishes/${id}`, { method: 'DELETE' });
     fetchDishes();
   };
 
