@@ -177,6 +177,56 @@ app.post('/user-data', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Добавление блюда пользователем
+app.post('/dishes/add', async (req, res) => {
+  const { name, price, category } = req.body;
+
+  if (!name || !category) {
+    return res.status(400).json({ error: 'Укажите название и категорию блюда' });
+  }
+
+  try {
+    const result = await pool.query(
+      INSERT INTO dishes (name, price, category) VALUES ($1, $2, $3) RETURNING id,
+      [name, price || 0, category]
+    );
+    res.json({ message: 'Блюдо добавлено', id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Обновление блюда
+app.put('/dishes/:id', async (req, res) => {
+  const { name, price, category } = req.body;
+  const { id } = req.params;
+
+  if (!name || !category) {
+    return res.status(400).json({ error: 'Укажите название и категорию' });
+  }
+
+  try {
+    const result = await pool.query(
+      UPDATE dishes SET name = $1, price = $2, category = $3 WHERE id = $4,
+      [name, price || 0, category, id]
+    );
+    res.json({ message: 'Блюдо обновлено' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Удаление блюда
+app.delete('/dishes/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await pool.query(DELETE FROM dishes WHERE id = $1, [id]);
+    res.json({ message: 'Блюдо удалено' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
