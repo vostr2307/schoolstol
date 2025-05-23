@@ -19,7 +19,7 @@ export default function AdminUsersTab() {
 
   const deleteUser = async (id) => {
     if (!window.confirm('Удалить пользователя?')) return;
-    await fetch(`/users/${id}`, { method: 'DELETE' });
+    await fetch(`https://schoolstol.onrender.com/users/${id}`, { method: 'DELETE' });
     loadUsers();
   };
 
