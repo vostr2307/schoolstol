@@ -10,13 +10,13 @@ export default function AdminStatsTab() {
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL + '/departments')
+    fetch('/departments')
       .then(res => res.json())
       .then(setDepartments);
   }, []);
 
   const load = () => {
-    fetch(API_URL + `/stats?department_id=${department_id}&start=${start}&end=${end}`)
+    fetch(`/stats?department_id=${department_id}&start=${start}&end=${end}`)
       .then(res => res.json())
       .then(setData);
   };
