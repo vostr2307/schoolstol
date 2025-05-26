@@ -195,6 +195,9 @@ app.get('/dishes', async (req, res) => {
 app.post('/dishes/add', async (req, res) => {
   const { name, price, category, department_id } = req.body;
 
+  // Проверим, что приходит на сервер
+  console.log('POST /dishes/add payload:', { name, price, category, department_id });
+
   if (!name || !category || !department_id) {
     return res.status(400).json({ error: 'Необходимо указать название, категорию и подразделение' });
   }
@@ -206,6 +209,7 @@ app.post('/dishes/add', async (req, res) => {
     );
     res.json({ message: 'Блюдо добавлено', id: result.rows[0].id });
   } catch (err) {
+    console.error('Ошибка при добавлении блюда:', err);
     res.status(500).json({ error: err.message });
   }
 });
