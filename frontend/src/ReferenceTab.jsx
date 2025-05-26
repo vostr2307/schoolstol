@@ -10,7 +10,7 @@ export default function ReferenceTab() {
   const department_id = JSON.parse(localStorage.getItem('user'))?.department_id;
 
   const fetchDishes = () => {
-    fetch(${API_URL}/dishes?category=${category}&department_id=${department_id})
+    fetch('https://schoolstol.onrender.com/dishes?category=${category}&department_id=${department_id}')
       .then(res => res.json())
       .then(setDishes)
       .catch(err => console.error('Ошибка загрузки блюд:', err));
@@ -25,16 +25,16 @@ export default function ReferenceTab() {
   const handleAdd = async () => {
     if (!newName || !newPrice || !department_id) return;
     try {
-      await fetch(${API_URL}/dishes/add, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newName,
-          price: parseFloat(newPrice),
-          category,
-          department_id
-        })
-      });
+     await fetch('https://schoolstol.onrender.com/dishes/add ', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: newName,
+    price: parseFloat(newPrice),
+    category,
+    department_id
+  })
+});
       setNewName('');
       setNewPrice('');
       fetchDishes();
