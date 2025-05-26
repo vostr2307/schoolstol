@@ -25,7 +25,7 @@ export default function ReferenceTab() {
   const handleAdd = async () => {
     if (!newName || !newPrice || !department_id) return;
     try {
-      await fetch('https://schoolstol.onrender.com/dishes/add ', {
+      await fetch('https://schoolstol.onrender.com/dishes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
