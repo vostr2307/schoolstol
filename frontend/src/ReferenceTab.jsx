@@ -25,7 +25,7 @@ export default function ReferenceTab() {
   const handleAdd = async () => {
     if (!newName || !newPrice || !department_id) return;
     try {
-      await fetch('https://schoolstol.onrender.com/dishes', {
+      await fetch('https://schoolstol.onrender.com/dishes/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,7 +46,7 @@ export default function ReferenceTab() {
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
     try {
-      await fetch(`${API_URL}/dishes/${id}`, { method: 'DELETE' });
+      await fetch(`https://schoolstol.onrender.com/dishes/${id}`, { method: 'DELETE' });
       fetchDishes();
     } catch (err) {
       console.error('Ошибка удаления:', err);
