@@ -6,9 +6,12 @@ export default function ReferenceTab() {
   const [newName, setNewName] = useState('');
   const [newPrice, setNewPrice] = useState('');
 
-  const department_id = localStorage.getItem('department_id');
+  // Получаем department_id из объекта user в localStorage
+  const userStr = localStorage.getItem('user');
+  const department_id = userStr ? JSON.parse(userStr).department_id : null;
 
   const fetchDishes = () => {
+    if (!department_id) return; // Без отдела — не делаем запрос
     fetch(`https://schoolstol.onrender.com/dishes?category=${category}&department_id=${department_id}`)
       .then(res => res.json())
       .then(setDishes);
