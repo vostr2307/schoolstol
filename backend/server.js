@@ -100,11 +100,12 @@ app.delete('/users/:id', async (req, res) => {
   }
 });
 
-// Получить данные пользователя (основной фикс!)
+// Получить данные пользователя (DEBUG-лог!)
 app.get('/user-data', async (req, res) => {
   const { department_id, date } = req.query;
+  const depId = Number(department_id);
+  console.log('DEBUG department_id:', department_id, '| depId:', depId, '| typeof depId:', typeof depId, '| date:', date);
   try {
-    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
     const sales = await pool.query(`
       SELECT s.*, d.category, d.name, d.price 
       FROM sales s JOIN dishes d ON s.dish_id = d.id 
@@ -147,7 +148,7 @@ app.post('/user-data', async (req, res) => {
   const { department_id, date, sales, reports } = req.body;
 
   try {
-    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
+    const depId = Number(department_id);
     await pool.query(`DELETE FROM sales WHERE department_id = $1 AND date = $2`, [depId, date]);
     await pool.query(`DELETE FROM reports WHERE department_id = $1 AND date = $2`, [depId, date]);
 
@@ -185,7 +186,7 @@ app.post('/user-data', async (req, res) => {
 app.get('/dishes', async (req, res) => {
   const { category, department_id } = req.query;
   try {
-    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
+    const depId = Number(department_id);
     const result = await pool.query(
       'SELECT id, name, price, category FROM dishes WHERE category = $1 AND department_id = $2 ORDER BY name',
       [category, depId]
@@ -207,7 +208,7 @@ app.post('/dishes/add', async (req, res) => {
   }
 
   try {
-    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
+    const depId = Number(department_id);
     const result = await pool.query(
       'INSERT INTO dishes (name, price, category, department_id) VALUES ($1, $2, $3, $4) RETURNING id',
       [name, price || 0, category, depId]
