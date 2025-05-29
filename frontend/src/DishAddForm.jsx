@@ -9,6 +9,7 @@ export default function DishAddForm({ category, onDishAdded }) {
   const handleAdd = async (e) => {
     e.preventDefault();
 
+    // Получаем пользователя из localStorage
     const user = JSON.parse(localStorage.getItem('user'));
     const department_id = user?.department_id;
 
@@ -18,7 +19,7 @@ export default function DishAddForm({ category, onDishAdded }) {
     }
 
     try {
-      const response = await fetch(`${API_URL}/dishes`, {
+      const response = await fetch(`${API_URL}/dishes/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -31,12 +32,12 @@ export default function DishAddForm({ category, onDishAdded }) {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Ошибка при добавлении');
+        throw new Error(error.error || error.message || 'Ошибка при добавлении');
       }
 
       setName('');
       setPrice('');
-      onDishAdded(); // обновим список
+      if (typeof onDishAdded === 'function') onDishAdded();
     } catch (err) {
       console.error('Ошибка при добавлении:', err.message);
       alert(`Ошибка: ${err.message}`);
