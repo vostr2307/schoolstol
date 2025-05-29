@@ -6,26 +6,25 @@ export default function ReferenceTab() {
   const [dishes, setDishes] = useState([]);
   const [newName, setNewName] = useState('');
   const [newPrice, setNewPrice] = useState('');
-
-  const department_id = JSON.parse(localStorage.getItem('user'))?.department_id;
+  const user = JSON.parse(localStorage.getItem('user'));
+  const department_id = user?.department_id;
 
   const fetchDishes = () => {
-    fetch(`https://schoolstol.onrender.com/dishes?category= ${category}&department_id=${department_id}`)
+    if (!department_id) return;
+    fetch(`${API_URL}/dishes?category=${category}&department_id=${department_id}`)
       .then(res => res.json())
       .then(setDishes)
       .catch(err => console.error('Ошибка загрузки блюд:', err));
   };
 
   useEffect(() => {
-    if (department_id) {
-      fetchDishes();
-    }
+    fetchDishes();
   }, [category]);
 
   const handleAdd = async () => {
     if (!newName || !newPrice || !department_id) return;
     try {
-      await fetch('https://schoolstol.onrender.com/dishes/add', {
+      await fetch(`${API_URL}/dishes/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,7 +45,7 @@ export default function ReferenceTab() {
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
     try {
-      await fetch(`https://schoolstol.onrender.com/dishes/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/dishes/${id}`, { method: 'DELETE' });
       fetchDishes();
     } catch (err) {
       console.error('Ошибка удаления:', err);
@@ -109,7 +108,7 @@ export default function ReferenceTab() {
           </tr>
         </thead>
         <tbody>
-          {dishes.sort((a, b) => a.name.localeCompare(b.name)).map(d => (
+          {dishes.map(d => (
             <tr key={d.id}>
               <td className="px-4 py-2">{d.name}</td>
               <td className="px-4 py-2">{d.price} ₽</td>
