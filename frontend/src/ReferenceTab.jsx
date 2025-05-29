@@ -1,16 +1,15 @@
-// ReferenceTab.jsx
 import React, { useState, useEffect } from 'react';
 import { API_URL } from './config';
-import DishAddForm from './DishAddForm';
 
 export default function ReferenceTab() {
   const [category, setCategory] = useState('kitchen');
   const [dishes, setDishes] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newPrice, setNewPrice] = useState('');
 
   const department_id = localStorage.getItem('department_id');
 
   const fetchDishes = () => {
-    if (!department_id) return;
     fetch(`${API_URL}/dishes?category=${category}&department_id=${department_id}`)
       .then(res => res.json())
       .then(setDishes);
@@ -19,6 +18,23 @@ export default function ReferenceTab() {
   useEffect(() => {
     fetchDishes();
   }, [category]);
+
+  const handleAdd = async () => {
+    if (!newName || !newPrice || !department_id) return alert('Заполните все поля');
+    await fetch(`${API_URL}/dishes/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: newName,
+        price: parseFloat(newPrice),
+        category,
+        department_id
+      })
+    });
+    setNewName('');
+    setNewPrice('');
+    fetchDishes();
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
@@ -51,7 +67,28 @@ export default function ReferenceTab() {
 
       <div className="bg-white p-4 rounded shadow mb-4">
         <h3 className="font-medium mb-2">Добавить блюдо</h3>
-        <DishAddForm onDishAdded={fetchDishes} category={category} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            type="text"
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            placeholder="Название"
+            className="border px-3 py-2 rounded"
+          />
+          <input
+            type="number"
+            value={newPrice}
+            onChange={e => setNewPrice(e.target.value)}
+            placeholder="Цена"
+            className="border px-3 py-2 rounded"
+          />
+          <button
+            onClick={handleAdd}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Добавить
+          </button>
+        </div>
       </div>
 
       <table className="min-w-full bg-white border divide-y divide-gray-200 shadow rounded-lg">
@@ -63,7 +100,7 @@ export default function ReferenceTab() {
           </tr>
         </thead>
         <tbody>
-          {dishes.sort((a, b) => a.name.localeCompare(b.name)).map(d => (
+          {dishes.map(d => (
             <tr key={d.id}>
               <td className="px-4 py-2">{d.name}</td>
               <td className="px-4 py-2">{d.price} ₽</td>
