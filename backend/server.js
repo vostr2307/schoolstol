@@ -136,6 +136,7 @@ app.get('/user-data', async (req, res) => {
       }
     });
   } catch (err) {
+    console.error('Ошибка в /user-data:', err); // <-- добавлено логирование ошибки
     res.status(500).json({ error: err.message });
   }
 });
@@ -177,6 +178,7 @@ app.post('/user-data', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 // Получить список блюд по категории
 app.get('/dishes', async (req, res) => {
   const { category, department_id } = req.query;
