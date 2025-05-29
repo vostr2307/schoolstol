@@ -107,7 +107,7 @@ app.get('/user-data', async (req, res) => {
     const sales = await pool.query(`
       SELECT s.*, d.category, d.name, d.price 
       FROM sales s JOIN dishes d ON s.dish_id = d.id 
-      WHERE s.department_id = $1 AND s.date = $2
+      WHERE s.department_id = CAST($1 AS integer) AND s.date = $2
     `, [department_id, date]);
 
     const report = await pool.query(`
