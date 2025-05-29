@@ -100,19 +100,20 @@ app.delete('/users/:id', async (req, res) => {
   }
 });
 
-// Получить данные пользователя
+// Получить данные пользователя (основной фикс!)
 app.get('/user-data', async (req, res) => {
   const { department_id, date } = req.query;
   try {
+    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
     const sales = await pool.query(`
       SELECT s.*, d.category, d.name, d.price 
       FROM sales s JOIN dishes d ON s.dish_id = d.id 
-      WHERE s.department_id = CAST($1 AS integer) AND s.date = $2
-    `, [department_id, date]);
+      WHERE s.department_id = $1 AND s.date = $2
+    `, [depId, date]);
 
     const report = await pool.query(`
       SELECT * FROM reports WHERE department_id = $1 AND date = $2
-    `, [department_id, date]);
+    `, [depId, date]);
 
     const categorized = { kitchen: {}, bakery: {}, buffet: {}, organized: {} };
     sales.rows.forEach(row => {
@@ -136,7 +137,7 @@ app.get('/user-data', async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Ошибка в /user-data:', err); // <-- добавлено логирование ошибки
+    console.error('Ошибка в /user-data:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -146,8 +147,9 @@ app.post('/user-data', async (req, res) => {
   const { department_id, date, sales, reports } = req.body;
 
   try {
-    await pool.query(`DELETE FROM sales WHERE department_id = $1 AND date = $2`, [department_id, date]);
-    await pool.query(`DELETE FROM reports WHERE department_id = $1 AND date = $2`, [department_id, date]);
+    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
+    await pool.query(`DELETE FROM sales WHERE department_id = $1 AND date = $2`, [depId, date]);
+    await pool.query(`DELETE FROM reports WHERE department_id = $1 AND date = $2`, [depId, date]);
 
     const salesInserts = [];
     for (const [category, dishData] of Object.entries(sales)) {
@@ -156,7 +158,7 @@ app.post('/user-data', async (req, res) => {
           INSERT INTO sales (department_id, dish_id, date, preparedToday, sold, writtenOff, previousStock, issued)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `, [
-          department_id, dish_id, date,
+          depId, dish_id, date,
           entry.preparedToday || 0,
           entry.sold || 0,
           entry.writtenOff || 0,
@@ -171,7 +173,7 @@ app.post('/user-data', async (req, res) => {
     await pool.query(`
       INSERT INTO reports (department_id, date, expenses, comment, totalCash, totalCard)
       VALUES ($1, $2, $3, $4, $5, $6)
-    `, [department_id, date, reports.expenses || '', reports.comment || '', reports.totalCash || '', reports.totalCard || '']);
+    `, [depId, date, reports.expenses || '', reports.comment || '', reports.totalCash || '', reports.totalCard || '']);
 
     res.json({ message: 'Сохранено' });
   } catch (err) {
@@ -183,9 +185,10 @@ app.post('/user-data', async (req, res) => {
 app.get('/dishes', async (req, res) => {
   const { category, department_id } = req.query;
   try {
+    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
     const result = await pool.query(
       'SELECT id, name, price, category FROM dishes WHERE category = $1 AND department_id = $2 ORDER BY name',
-      [category, department_id]
+      [category, depId]
     );
     res.json(result.rows);
   } catch (err) {
@@ -197,7 +200,6 @@ app.get('/dishes', async (req, res) => {
 app.post('/dishes/add', async (req, res) => {
   const { name, price, category, department_id } = req.body;
 
-  // Проверим, что приходит на сервер
   console.log('POST /dishes/add payload:', { name, price, category, department_id });
 
   if (!name || !category || !department_id) {
@@ -205,9 +207,10 @@ app.post('/dishes/add', async (req, res) => {
   }
 
   try {
+    const depId = Number(department_id); // <-- фикс: всегда приводим к числу!
     const result = await pool.query(
       'INSERT INTO dishes (name, price, category, department_id) VALUES ($1, $2, $3, $4) RETURNING id',
-      [name, price || 0, category, department_id]
+      [name, price || 0, category, depId]
     );
     res.json({ message: 'Блюдо добавлено', id: result.rows[0].id });
   } catch (err) {
