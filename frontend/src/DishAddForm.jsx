@@ -1,6 +1,4 @@
-// DishAddForm.jsx
 import React, { useState } from 'react';
-import { API_URL } from './config';
 
 export default function DishAddForm({ category, onDishAdded }) {
   const [name, setName] = useState('');
@@ -9,9 +7,16 @@ export default function DishAddForm({ category, onDishAdded }) {
   const handleAdd = async (e) => {
     e.preventDefault();
 
-    // Получаем пользователя из localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
-    const department_id = user?.department_id;
+    const userStr = localStorage.getItem('user');
+    let department_id = null;
+    try {
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        department_id = user.department_id;
+      }
+    } catch {
+      department_id = null;
+    }
 
     if (!name || !price || !department_id) {
       alert('Введите название, цену и убедитесь, что вы вошли в систему.');
@@ -19,7 +24,7 @@ export default function DishAddForm({ category, onDishAdded }) {
     }
 
     try {
-      const response = await fetch(`${API_URL}/dishes/add`, {
+      const response = await fetch(`https://schoolstol.onrender.com/dishes/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
