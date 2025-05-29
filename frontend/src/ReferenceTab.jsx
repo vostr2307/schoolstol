@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { API_URL } from './config';
 
 export default function ReferenceTab() {
   const [category, setCategory] = useState('kitchen');
@@ -10,18 +9,19 @@ export default function ReferenceTab() {
   const department_id = localStorage.getItem('department_id');
 
   const fetchDishes = () => {
-    fetch(`${API_URL}/dishes?category=${category}&department_id=${department_id}`)
+    fetch(`https://schoolstol.onrender.com/dishes?category=${category}&department_id=${department_id}`)
       .then(res => res.json())
       .then(setDishes);
   };
 
   useEffect(() => {
     fetchDishes();
+    // eslint-disable-next-line
   }, [category]);
 
   const handleAdd = async () => {
     if (!newName || !newPrice || !department_id) return alert('Заполните все поля');
-    await fetch(`${API_URL}/dishes/add`, {
+    await fetch(`https://schoolstol.onrender.com/dishes/add`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -38,7 +38,7 @@ export default function ReferenceTab() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Удалить блюдо?')) return;
-    await fetch(`${API_URL}/dishes/${id}`, { method: 'DELETE' });
+    await fetch(`https://schoolstol.onrender.com/dishes/${id}`, { method: 'DELETE' });
     fetchDishes();
   };
 
