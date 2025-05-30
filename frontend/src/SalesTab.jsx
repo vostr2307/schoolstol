@@ -116,11 +116,11 @@ const SalesTab = ({ user, date }) => {
               {category !== 'organized' ? (
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <div className="font-bold">Остатки</div>
+                    <div className="font-normal">Остатки</div>
                     <div>{entry.previousStock || 0}</div>
                   </div>
                   <div>
-                    <div className="font-bold">Приготовлено</div>
+                    <div className="font-normal">Приготовлено</div>
                     <input
                       type="number"
                       value={entry.preparedToday || ''}
@@ -129,7 +129,7 @@ const SalesTab = ({ user, date }) => {
                     />
                   </div>
                   <div>
-                    <div className="font-bold">Продано</div>
+                    <div className="font-normal">Продано</div>
                     <input
                       type="number"
                       value={entry.sold || ''}
@@ -138,7 +138,7 @@ const SalesTab = ({ user, date }) => {
                     />
                   </div>
                   <div>
-                    <div className="font-bold">Списано</div>
+                    <div className="font-normal">Списано</div>
                     <input
                       type="number"
                       value={entry.writtenOff || ''}
