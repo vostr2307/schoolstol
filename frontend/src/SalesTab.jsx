@@ -47,36 +47,44 @@ const SalesTab = ({ user, date }) => {
       const updated = { ...prev };
       const dishKey = String(dishId);
       if (!updated[dishKey]) updated[dishKey] = {};
-      updated[dishKey][field] = Number(value);
+      updated[dishKey][field] = value;
       return updated;
     });
   };
 
   const handleSave = async () => {
-    const filteredSales = {};
-    for (const dish of dishes[category]) {
-      const entry = sales[dish.id] || {};
-      if (!filteredSales[category]) filteredSales[category] = {};
-      filteredSales[category][dish.id] = entry;
-    }
+    try {
+      const res = await fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`);
+      const serverData = await res.json();
+      const allSales = serverData.sales || {};
 
-    const payload = {
-      department_id: user.department_id,
-      date,
-      sales: filteredSales,
-      reports: {}
-    };
+      const updatedCategorySales = {};
+      for (const dish of dishes[category]) {
+        const entry = sales[dish.id] || {};
+        updatedCategorySales[dish.id] = entry;
+      }
 
-    const res = await fetch('https://schoolstol.onrender.com/user-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+      const newSales = { ...allSales, [category]: updatedCategorySales };
 
-    if (res.ok) {
-      alert('Данные сохранены');
-    } else {
-      alert('Ошибка при сохранении');
+      const saveRes = await fetch('https://schoolstol.onrender.com/user-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          department_id: user.department_id,
+          date,
+          sales: newSales,
+          reports: serverData.reports || {}
+        })
+      });
+
+      if (saveRes.ok) {
+        alert('Данные сохранены');
+      } else {
+        alert('Ошибка при сохранении');
+      }
+    } catch (err) {
+      console.error('Ошибка при сохранении:', err);
+      alert('Произошла ошибка');
     }
   };
 
@@ -96,18 +104,11 @@ const SalesTab = ({ user, date }) => {
         ))}
       </div>
 
-      <button
-        onClick={handleSave}
-        className="mb-4 px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Закрепить
-      </button>
-
       <table className="w-full table-auto border">
         <thead>
           <tr className="bg-gray-100">
             <th className="border px-2 py-1 text-left">Название</th>
-            {category !== 'organized' && <th className="border px-2 py-1">Остатки</th>}
+            <th className="border px-2 py-1">Остатки</th>
             {category !== 'organized' && (
               <>
                 <th className="border px-2 py-1">Приготовлено</th>
@@ -116,7 +117,9 @@ const SalesTab = ({ user, date }) => {
               </>
             )}
             {category === 'organized' && (
-              <th className="border px-2 py-1">Отпущено</th>
+              <>
+                <th className="border px-2 py-1">Отпущено</th>
+              </>
             )}
           </tr>
         </thead>
@@ -126,9 +129,9 @@ const SalesTab = ({ user, date }) => {
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
+                <td className="border px-2 py-1">{entry.previousStock || 0}</td>
                 {category !== 'organized' && (
                   <>
-                    <td className="border px-2 py-1">{entry.previousStock || 0}</td>
                     <td className="border px-2 py-1">
                       <input
                         type="number"
@@ -156,20 +159,28 @@ const SalesTab = ({ user, date }) => {
                   </>
                 )}
                 {category === 'organized' && (
-                  <td className="border px-2 py-1">
-                    <input
-                      type="number"
-                      value={entry.issued || ''}
-                      onChange={e => handleChange(dish.id, 'issued', e.target.value)}
-                      className="w-full border rounded px-1"
-                    />
-                  </td>
+                  <>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.issued || ''}
+                        onChange={e => handleChange(dish.id, 'issued', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                  </>
                 )}
               </tr>
             );
           })}
         </tbody>
       </table>
+
+      <div className="mt-4">
+        <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded">
+          Закрепить данные вкладки
+        </button>
+      </div>
     </div>
   );
 };
