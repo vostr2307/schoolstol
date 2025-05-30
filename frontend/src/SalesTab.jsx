@@ -52,6 +52,11 @@ const SalesTab = ({ user, date }) => {
     });
   };
 
+  const handleLockCategory = () => {
+    alert(`Результаты по категории "${categories[category]}" закреплены.`);
+    // здесь может быть запрос на сервер в будущем
+  };
+
   const currentDishes = dishes[category] || [];
 
   return (
@@ -68,11 +73,18 @@ const SalesTab = ({ user, date }) => {
         ))}
       </div>
 
+      <button
+        onClick={handleLockCategory}
+        className="mb-4 px-4 py-2 bg-green-500 text-white rounded"
+      >
+        Закрепить {categories[category]}
+      </button>
+
       <table className="w-full table-auto border">
         <thead>
           <tr className="bg-gray-100">
             <th className="border px-2 py-1 text-left">Название</th>
-            <th className="border px-2 py-1">Остатки</th>
+            {category !== 'organized' && <th className="border px-2 py-1">Остатки</th>}
             {category !== 'organized' && (
               <>
                 <th className="border px-2 py-1">Приготовлено</th>
@@ -82,7 +94,6 @@ const SalesTab = ({ user, date }) => {
             )}
             {category === 'organized' && (
               <>
-                <th className="border px-2 py-1">Изготовлено</th>
                 <th className="border px-2 py-1">Отпущено</th>
               </>
             )}
@@ -94,7 +105,7 @@ const SalesTab = ({ user, date }) => {
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
-                <td className="border px-2 py-1">{entry.previousStock || 0}</td>
+                {category !== 'organized' && <td className="border px-2 py-1">{entry.previousStock || 0}</td>}
                 {category !== 'organized' && (
                   <>
                     <td className="border px-2 py-1">
@@ -124,24 +135,14 @@ const SalesTab = ({ user, date }) => {
                   </>
                 )}
                 {category === 'organized' && (
-                  <>
-                    <td className="border px-2 py-1">
-                      <input
-                        type="number"
-                        value={entry.preparedToday || ''}
-                        onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                    <td className="border px-2 py-1">
-                      <input
-                        type="number"
-                        value={entry.issued || ''}
-                        onChange={e => handleChange(dish.id, 'issued', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                  </>
+                  <td className="border px-2 py-1">
+                    <input
+                      type="number"
+                      value={entry.issued || ''}
+                      onChange={e => handleChange(dish.id, 'issued', e.target.value)}
+                      className="w-full border rounded px-1"
+                    />
+                  </td>
                 )}
               </tr>
             );
