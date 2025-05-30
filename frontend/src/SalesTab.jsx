@@ -12,38 +12,46 @@ const SalesTab = ({ user, date }) => {
   const [dishes, setDishes] = useState({});
   const [category, setCategory] = useState('kitchen');
 
+  // Загрузка продаж и отчёта
   useEffect(() => {
     if (!user || !date) return;
     fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`)
       .then(res => res.json())
       .then(data => {
-        setSales(data.sales || {});
-      })
-      .catch(err => console.error('Ошибка при загрузке sales:', err));
+        const normalized = {};
+        for (const cat in data.sales) {
+          normalized[cat] = {};
+          for (const id in data.sales[cat]) {
+            normalized[cat][String(id)] = data.sales[cat][id];
+          }
+        }
+        setSales(normalized);
+      });
   }, [user, date]);
 
+  // Загрузка блюд
   useEffect(() => {
     if (!user || !category) return;
     fetch(`https://schoolstol.onrender.com/dishes?category=${category}&department_id=${user.department_id}`)
       .then(res => res.json())
       .then(data => {
         setDishes(prev => ({ ...prev, [category]: data }));
-      })
-      .catch(err => console.error('Ошибка при загрузке dishes:', err));
+      });
   }, [user, category]);
 
   const handleChange = (dishId, field, value) => {
     setSales(prev => {
       const updated = { ...prev };
+      const dishKey = String(dishId);
       if (!updated[category]) updated[category] = {};
-      if (!updated[category][dishId]) updated[category][dishId] = {};
-      updated[category][dishId][field] = value;
+      if (!updated[category][dishKey]) updated[category][dishKey] = {};
+      updated[category][dishKey][field] = value;
       return updated;
     });
   };
 
-  const currentDishes = (dishes && dishes[category]) ? dishes[category] : [];
-  const currentSales = (sales && sales[category]) ? sales[category] : {};
+  const currentDishes = dishes[category] || [];
+  const currentSales = sales[category] || {};
 
   return (
     <div>
@@ -71,7 +79,7 @@ const SalesTab = ({ user, date }) => {
         </thead>
         <tbody>
           {currentDishes.map(dish => {
-            const entry = currentSales[dish.id] || currentSales[String(dish.id)] || {};
+            const entry = currentSales[String(dish.id)] || {};
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
