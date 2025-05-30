@@ -1,36 +1,29 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import AppRouter from './AppRouter';
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [currentDate, setCurrentDate] = useState('');
 
-  const handleLogout = () => {
-    setUser(null);
-  };
-
-  const departmentName = user?.department || '';
+  useEffect(() => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    setCurrentDate(`${day}.${month}.${year}`);
+  }, []);
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow p-4 flex justify-between items-center">
-          <div>
-            <h1 className="font-bold text-lg">Учет продаж — школстол.рф</h1>
-            <p className="text-sm text-gray-600">{user?.name} — Подразделение: {departmentName}</p>
-          </div>
-          <div className="flex flex-col items-end text-sm">
-            <div className="text-gray-500">{new Date(date).toLocaleDateString('ru-RU')}</div>
-            <button onClick={handleLogout} className="text-blue-600 hover:underline">Выйти</button>
-          </div>
-        </header>
-
-        <main className="p-4">
-          <AppRouter user={user} setUser={setUser} date={date} setDate={setDate} />
-        </main>
-      </div>
-    </Router>
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-blue-600 text-white p-4 shadow">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-xl font-semibold">Учет продаж — школстол.рф</h1>
+          <span className="text-sm">{currentDate}</span>
+        </div>
+      </header>
+      <main className="container mx-auto p-4">
+        <AppRouter />
+      </main>
+    </div>
   );
 };
 
