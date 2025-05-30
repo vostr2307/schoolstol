@@ -92,16 +92,23 @@ const SalesTab = ({ user, date }) => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-4">
         {Object.entries(categories).map(([key, label]) => (
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className={`px-4 py-2 rounded ${category === key ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            className={`px-4 py-2 rounded-full ${category === key ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
           >
             {label}
           </button>
         ))}
+        <button
+          onClick={handleSave}
+          title="Закрепить данные вкладки"
+          className="ml-auto bg-green-600 text-white px-3 py-2 rounded-full text-lg"
+        >
+          ✓
+        </button>
       </div>
 
       <table className="w-full table-auto border">
@@ -175,12 +182,6 @@ const SalesTab = ({ user, date }) => {
           })}
         </tbody>
       </table>
-
-      <div className="mt-4">
-        <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded">
-          Закрепить данные вкладки
-        </button>
-      </div>
     </div>
   );
 };
