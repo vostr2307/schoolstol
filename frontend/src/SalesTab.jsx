@@ -17,14 +17,13 @@ const SalesTab = ({ user, date }) => {
     fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`)
       .then(res => res.json())
       .then(data => {
-        const normalized = {};
+        const flatSales = {};
         for (const cat in data.sales) {
-          normalized[cat] = {};
           for (const id in data.sales[cat]) {
-            normalized[cat][String(id)] = data.sales[cat][id];
+            flatSales[String(id)] = data.sales[cat][id];
           }
         }
-        setSales(normalized);
+        setSales(flatSales);
       });
   }, [user, date]);
 
@@ -47,15 +46,13 @@ const SalesTab = ({ user, date }) => {
     setSales(prev => {
       const updated = { ...prev };
       const dishKey = String(dishId);
-      if (!updated[category]) updated[category] = {};
-      if (!updated[category][dishKey]) updated[category][dishKey] = {};
-      updated[category][dishKey][field] = value;
+      if (!updated[dishKey]) updated[dishKey] = {};
+      updated[dishKey][field] = value;
       return updated;
     });
   };
 
   const currentDishes = dishes[category] || [];
-  const currentSales = sales[category] || {};
 
   return (
     <div>
@@ -83,7 +80,7 @@ const SalesTab = ({ user, date }) => {
         </thead>
         <tbody>
           {currentDishes.map(dish => {
-            const entry = currentSales[String(dish.id)] || {};
+            const entry = sales[String(dish.id)] || {};
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
