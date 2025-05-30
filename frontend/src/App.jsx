@@ -95,7 +95,7 @@ export default function App({ user, onLogout }) {
           <button onClick={() => setActiveTab('reports')} className={`px-3 py-1 rounded ${activeTab === 'reports' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-200'}`}>Отчет</button>
         </nav>
         <main className="p-4">
-          {activeTab === 'sales' && <SalesTab />}
+          {activeTab === 'sales' && <SalesTab user={user} date={date} />}
           {activeTab === 'reference' && <ReferenceTab />}
           {activeTab === 'reports' && <ReportsTab />}
         </main>
