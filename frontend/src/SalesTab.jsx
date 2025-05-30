@@ -93,38 +93,34 @@ const SalesTab = ({ user, date }) => {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-2 justify-between items-center">
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(categories).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setCategory(key)}
-              className={`px-4 py-2 rounded-full text-sm ${category === key ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded-full">
+      <div className="flex gap-2 mb-2">
+        {Object.entries(categories).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setCategory(key)}
+            className={`px-3 py-1 rounded text-sm ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="w-full flex justify-center mb-4">
+        <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded-full shadow hover:bg-green-600">
           <Check size={20} />
         </button>
       </div>
 
       <table className="w-full table-auto border text-sm">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-50">
             <th className="border px-2 py-1 text-left">Название</th>
+            {category !== 'organized' && <th className="border px-2 py-1">Остатки</th>}
+            <th className="border px-2 py-1">{category !== 'organized' ? 'Приготовлено' : 'Отпущено'}</th>
             {category !== 'organized' && (
               <>
-                <th className="border px-2 py-1">Остатки</th>
-                <th className="border px-2 py-1">Приготовлено</th>
                 <th className="border px-2 py-1">Продано</th>
                 <th className="border px-2 py-1">Списано</th>
-              </>
-            )}
-            {category === 'organized' && (
-              <>
-                <th className="border px-2 py-1">Отпущено</th>
               </>
             )}
           </tr>
@@ -133,20 +129,20 @@ const SalesTab = ({ user, date }) => {
           {currentDishes.map(dish => {
             const entry = sales[String(dish.id)] || {};
             return (
-              <tr key={dish.id}>
-                <td className="border px-2 py-1">{dish.name}</td>
+              <tr key={dish.id} className="border-b">
+                <td className="border px-2 py-1 w-1/4">{dish.name}</td>
+                {category !== 'organized' && <td className="border px-2 py-1 w-1/6">{entry.previousStock || 0}</td>}
+                <td className="border px-2 py-1 w-1/6">
+                  <input
+                    type="number"
+                    value={category === 'organized' ? (entry.issued || '') : (entry.preparedToday || '')}
+                    onChange={e => handleChange(dish.id, category === 'organized' ? 'issued' : 'preparedToday', e.target.value)}
+                    className="w-full border rounded px-1"
+                  />
+                </td>
                 {category !== 'organized' && (
                   <>
-                    <td className="border px-2 py-1">{entry.previousStock || 0}</td>
-                    <td className="border px-2 py-1">
-                      <input
-                        type="number"
-                        value={entry.preparedToday || ''}
-                        onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                    <td className="border px-2 py-1">
+                    <td className="border px-2 py-1 w-1/6">
                       <input
                         type="number"
                         value={entry.sold || ''}
@@ -154,23 +150,11 @@ const SalesTab = ({ user, date }) => {
                         className="w-full border rounded px-1"
                       />
                     </td>
-                    <td className="border px-2 py-1">
+                    <td className="border px-2 py-1 w-1/6">
                       <input
                         type="number"
                         value={entry.writtenOff || ''}
                         onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                  </>
-                )}
-                {category === 'organized' && (
-                  <>
-                    <td className="border px-2 py-1">
-                      <input
-                        type="number"
-                        value={entry.issued || ''}
-                        onChange={e => handleChange(dish.id, 'issued', e.target.value)}
                         className="w-full border rounded px-1"
                       />
                     </td>
