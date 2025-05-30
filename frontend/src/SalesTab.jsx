@@ -72,57 +72,77 @@ const SalesTab = ({ user, date }) => {
         <thead>
           <tr className="bg-gray-100">
             <th className="border px-2 py-1 text-left">Название</th>
-            <th className="border px-2 py-1">Приготовлено</th>
-            <th className="border px-2 py-1">Продано</th>
-            <th className="border px-2 py-1">Списано</th>
             <th className="border px-2 py-1">Остатки</th>
+            {category !== 'organized' && (
+              <>
+                <th className="border px-2 py-1">Приготовлено</th>
+                <th className="border px-2 py-1">Продано</th>
+                <th className="border px-2 py-1">Списано</th>
+              </>
+            )}
+            {category === 'organized' && (
+              <>
+                <th className="border px-2 py-1">Изготовлено</th>
+                <th className="border px-2 py-1">Отпущено</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
           {currentDishes.map(dish => {
-            const defaults = {
-              preparedToday: '',
-              sold: '',
-              writtenOff: '',
-              previousStock: '',
-              issued: ''
-            };
-            const entry = { ...defaults, ...sales[String(dish.id)] };
+            const entry = sales[String(dish.id)] || {};
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
-                <td className="border px-2 py-1">
-                  <input
-                    type="number"
-                    value={entry.preparedToday}
-                    onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
-                    className="w-full border rounded px-1"
-                  />
-                </td>
-                <td className="border px-2 py-1">
-                  <input
-                    type="number"
-                    value={entry.sold}
-                    onChange={e => handleChange(dish.id, 'sold', e.target.value)}
-                    className="w-full border rounded px-1"
-                  />
-                </td>
-                <td className="border px-2 py-1">
-                  <input
-                    type="number"
-                    value={entry.writtenOff}
-                    onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
-                    className="w-full border rounded px-1"
-                  />
-                </td>
-                <td className="border px-2 py-1">
-                  <input
-                    type="number"
-                    value={entry.previousStock}
-                    onChange={e => handleChange(dish.id, 'previousStock', e.target.value)}
-                    className="w-full border rounded px-1"
-                  />
-                </td>
+                <td className="border px-2 py-1">{entry.previousStock || 0}</td>
+                {category !== 'organized' && (
+                  <>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.preparedToday || ''}
+                        onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.sold || ''}
+                        onChange={e => handleChange(dish.id, 'sold', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.writtenOff || ''}
+                        onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                  </>
+                )}
+                {category === 'organized' && (
+                  <>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.preparedToday || ''}
+                        onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                    <td className="border px-2 py-1">
+                      <input
+                        type="number"
+                        value={entry.issued || ''}
+                        onChange={e => handleChange(dish.id, 'issued', e.target.value)}
+                        className="w-full border rounded px-1"
+                      />
+                    </td>
+                  </>
+                )}
               </tr>
             );
           })}
