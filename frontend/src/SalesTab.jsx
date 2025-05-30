@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Check } from 'lucide-react';
 
 const categories = {
   kitchen: 'Кухня',
   bakery: 'Выпечка',
   buffet: 'Буфет',
-  organized: 'Организованное питание'
+  organized: 'Орг. питание'
 };
 
 const SalesTab = ({ user, date }) => {
@@ -92,32 +93,30 @@ const SalesTab = ({ user, date }) => {
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-4">
-        {Object.entries(categories).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setCategory(key)}
-            className={`px-4 py-2 rounded-full ${category === key ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
-          >
-            {label}
-          </button>
-        ))}
-        <button
-          onClick={handleSave}
-          title="Закрепить данные вкладки"
-          className="ml-auto bg-green-600 text-white px-3 py-2 rounded-full text-lg"
-        >
-          ✓
+      <div className="flex flex-wrap gap-2 mb-2 justify-between items-center">
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(categories).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setCategory(key)}
+              className={`px-4 py-2 rounded-full text-sm ${category === key ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded-full">
+          <Check size={20} />
         </button>
       </div>
 
-      <table className="w-full table-auto border">
+      <table className="w-full table-auto border text-sm">
         <thead>
           <tr className="bg-gray-100">
             <th className="border px-2 py-1 text-left">Название</th>
-            <th className="border px-2 py-1">Остатки</th>
             {category !== 'organized' && (
               <>
+                <th className="border px-2 py-1">Остатки</th>
                 <th className="border px-2 py-1">Приготовлено</th>
                 <th className="border px-2 py-1">Продано</th>
                 <th className="border px-2 py-1">Списано</th>
@@ -136,9 +135,9 @@ const SalesTab = ({ user, date }) => {
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
-                <td className="border px-2 py-1">{entry.previousStock || 0}</td>
                 {category !== 'organized' && (
                   <>
+                    <td className="border px-2 py-1">{entry.previousStock || 0}</td>
                     <td className="border px-2 py-1">
                       <input
                         type="number"
