@@ -1,57 +1,47 @@
+// App.jsx
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AppRouter from './AppRouter';
+import SalesTab from './SalesTab';
+import ReportsTab from './ReportsTab';
+import ReferenceTab from './ReferenceTab';
 
-export const DataContext = createContext();
+const DataContext = createContext();
+export const useDataContext = () => useContext(DataContext);
 
-export function useDataContext() {
-  return useContext(DataContext);
-}
-
-const getTodayISO = () => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-};
-
-const App = () => {
-  const [user, setUser] = useState(null);
-  const [date, setDate] = useState(getTodayISO());
-  const [dishes, setDishes] = useState({});
+export default function App({ user, onLogout }) {
+  const [departmentName, setDepartmentName] = useState('');
+  const [date] = useState(() => new Date().toISOString().split('T')[0]);
+  const [activeTab, setActiveTab] = useState('sales');
   const [data, setData] = useState({
-    sales: {},
-    reports: {}
+    sales: { kitchen: {}, bakery: {}, buffet: {}, organized: {} },
+    reports: { expenses: '', comment: '', totalCash: '', totalCard: '' }
   });
 
-  // Загрузка всех справочников блюд
   useEffect(() => {
-    if (!user) return;
-    const categories = ['kitchen', 'bakery', 'buffet', 'organized'];
-    const fetchAll = async () => {
-      const all = {};
-      for (const cat of categories) {
-        const res = await fetch(`https://schoolstol.onrender.com/dishes?category=${cat}&department_id=${user.department_id}`);
-        const data = await res.json();
-        all[cat] = data;
-      }
-      setDishes(all);
-    };
-    fetchAll();
-  }, [user]);
+    fetch('https://schoolstol.onrender.com/departments')
+      .then(res => res.json())
+      .then(deps => {
+        const dep = deps.find(d => d.id === user.department_id);
+        if (dep) setDepartmentName(dep.name);
+      });
+  }, [user.department_id]);
 
-  // Загрузка данных продаж и отчёта для пользователя и даты
   useEffect(() => {
-    if (!user || !date) return;
     fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`)
       .then(res => res.json())
-      .then(resData => {
-        setData({
-          sales: resData.sales || {},
-          reports: resData.reports || {}
-        });
-      });
-  }, [user, date]);
+      .then(setData);
+  }, [user.department_id, date]);
 
-  // Обновление поля продажи
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetch('https://schoolstol.onrender.com/user-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ department_id: user.department_id, date, ...data })
+      });
+    }, 1000);
+    return () => clearTimeout(delay);
+  }, [data, user.department_id, date]);
+
   const updateSalesField = (category, dishId, field, value) => {
     setData(prev => ({
       ...prev,
@@ -60,7 +50,7 @@ const App = () => {
         [category]: {
           ...prev.sales[category],
           [dishId]: {
-            ...prev.sales[category]?.[dishId],
+            ...prev.sales[category][dishId],
             [field]: value
           }
         }
@@ -68,80 +58,48 @@ const App = () => {
     }));
   };
 
-  // Сохранение текущей вкладки продаж на сервере (только одну категорию!)
-  const saveCategorySales = async (category) => {
-    if (!user) return;
-    // Получаем актуальные данные с сервера
-    const serverRes = await fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`);
-    const serverData = await serverRes.json();
-    const categorySales = data.sales[category] || {};
-    const newSales = { ...serverData.sales, [category]: categorySales };
-    // Сохраняем
-    await fetch('https://schoolstol.onrender.com/user-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        department_id: user.department_id,
-        date,
-        sales: newSales,
-        reports: serverData.reports || {}
-      })
-    });
-    // Обновим глобальный стейт (можно дополнительно сделать всплывающее окно)
-    setData(prev => ({
-      ...prev,
-      sales: newSales
-    }));
-  };
-
-  // Для отчёта: обновление полей отчёта
   const updateReportField = (field, value) => {
     setData(prev => ({
       ...prev,
-      reports: {
-        ...prev.reports,
-        [field]: value
-      }
+      reports: { ...prev.reports, [field]: value }
     }));
   };
 
-  // Для отчёта: подсчёт выручки (суммирует только кухни, выпечки, буфет)
   const calculateRevenue = () => {
-    const kitchen = Object.values(data.sales.kitchen || {}).reduce((sum, dish) => sum + Number(dish.sold || 0) * Number(dish.price || 0), 0);
-    const bakery = Object.values(data.sales.bakery || {}).reduce((sum, dish) => sum + Number(dish.sold || 0) * Number(dish.price || 0), 0);
-    const buffet = Object.values(data.sales.buffet || {}).reduce((sum, dish) => sum + Number(dish.sold || 0) * Number(dish.price || 0), 0);
-    return kitchen + bakery + buffet;
+    let revenue = 0;
+    Object.entries(data.sales).forEach(([category, items]) => {
+      Object.entries(items).forEach(([_, values]) => {
+        const val = values.sold || values.issued || 0;
+        revenue += parseFloat(val) || 0;
+      });
+    });
+    revenue += parseFloat(data.reports.totalCash) || 0;
+    revenue += parseFloat(data.reports.totalCard) || 0;
+    revenue -= parseFloat(data.reports.expenses) || 0;
+    return revenue.toFixed(2);
   };
 
   return (
-    <DataContext.Provider value={{
-      data,
-      setData,
-      updateSalesField,
-      saveCategorySales,
-      updateReportField,
-      calculateRevenue,
-      user,
-      setUser,
-      date,
-      setDate,
-      dishes
-    }}>
-      <Router>
-        <div className="min-h-screen bg-gray-100">
-          <header className="bg-blue-600 text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-xl font-bold">Учет продаж — школстол.рф</h1>
-            <div className="text-sm mt-2 sm:mt-0">Дата: {new Date(date).toLocaleDateString('ru-RU')}</div>
-          </header>
-          <main className="p-4">
-            <Routes>
-              <Route path="*" element={<AppRouter />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
+    <DataContext.Provider value={{ data, updateSalesField, updateReportField, calculateRevenue }}>
+      <div className="min-h-screen bg-gray-100">
+        <header className="bg-white shadow p-4 flex justify-between items-center">
+          <div>
+            <h1 className="font-bold text-lg">Учет продаж — школстол.рф</h1>
+            <p className="text-sm text-gray-600">{user.name} — Подразделение: {departmentName}</p>
+          </div>
+          <button onClick={onLogout} className="text-sm text-blue-600 hover:underline">Выйти</button>
+        </header>
+        <nav className="bg-white shadow-sm px-4 py-2 flex gap-2">
+          <button onClick={() => setActiveTab('sales')} className={`px-3 py-1 rounded ${activeTab === 'sales' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-200'}`}>Продажи</button>
+          <button onClick={() => setActiveTab('reference')} className={`px-3 py-1 rounded ${activeTab === 'reference' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-200'}`}>Справочник</button>
+          <button onClick={() => setActiveTab('reports')} className={`px-3 py-1 rounded ${activeTab === 'reports' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-200'}`}>Отчет</button>
+        </nav>
+        <main className="p-4">
+          {activeTab === 'sales' && <SalesTab user={user} date={date} />}
+          {activeTab === 'reference' && <ReferenceTab />}
+          {activeTab === 'reports' && <ReportsTab />}
+        </main>
+      </div>
     </DataContext.Provider>
   );
-};
-
-export default App;
+}
