@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminPanel from './AdminPanel';
 import LoginPage from './LoginPage';
+import App from './App'; // ← ВАЖНО! Импортируем App
 
 export default function AppRouter() {
   const [user, setUser] = useState(null);
