@@ -80,14 +80,21 @@ const SalesTab = ({ user, date }) => {
         </thead>
         <tbody>
           {currentDishes.map(dish => {
-            const entry = sales[String(dish.id)] || {};
+            const defaults = {
+              preparedToday: '',
+              sold: '',
+              writtenOff: '',
+              previousStock: '',
+              issued: ''
+            };
+            const entry = { ...defaults, ...sales[String(dish.id)] };
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
                 <td className="border px-2 py-1">
                   <input
                     type="number"
-                    value={entry.preparedToday || ''}
+                    value={entry.preparedToday}
                     onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
                     className="w-full border rounded px-1"
                   />
@@ -95,7 +102,7 @@ const SalesTab = ({ user, date }) => {
                 <td className="border px-2 py-1">
                   <input
                     type="number"
-                    value={entry.sold || ''}
+                    value={entry.sold}
                     onChange={e => handleChange(dish.id, 'sold', e.target.value)}
                     className="w-full border rounded px-1"
                   />
@@ -103,7 +110,7 @@ const SalesTab = ({ user, date }) => {
                 <td className="border px-2 py-1">
                   <input
                     type="number"
-                    value={entry.writtenOff || ''}
+                    value={entry.writtenOff}
                     onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
                     className="w-full border rounded px-1"
                   />
@@ -111,7 +118,7 @@ const SalesTab = ({ user, date }) => {
                 <td className="border px-2 py-1">
                   <input
                     type="number"
-                    value={entry.previousStock || ''}
+                    value={entry.previousStock}
                     onChange={e => handleChange(dish.id, 'previousStock', e.target.value)}
                     className="w-full border rounded px-1"
                   />
