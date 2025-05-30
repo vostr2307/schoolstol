@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AppRouter from './AppRouter';
 
 export const DataContext = createContext();
@@ -127,19 +126,15 @@ const App = () => {
       setDate,
       dishes
     }}>
-      <Router>
-        <div className="min-h-screen bg-gray-100">
-          <header className="bg-blue-600 text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-xl font-bold">Учет продаж — школстол.рф</h1>
-            <div className="text-sm mt-2 sm:mt-0">Дата: {new Date(date).toLocaleDateString('ru-RU')}</div>
-          </header>
-          <main className="p-4">
-            <Routes>
-              <Route path="*" element={<AppRouter />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
+      <div className="min-h-screen bg-gray-100">
+        <header className="bg-blue-600 text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-xl font-bold">Учет продаж — школстол.рф</h1>
+          <div className="text-sm mt-2 sm:mt-0">Дата: {new Date(date).toLocaleDateString('ru-RU')}</div>
+        </header>
+        <main className="p-4">
+          <AppRouter />
+        </main>
+      </div>
     </DataContext.Provider>
   );
 };
