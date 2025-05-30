@@ -47,14 +47,37 @@ const SalesTab = ({ user, date }) => {
       const updated = { ...prev };
       const dishKey = String(dishId);
       if (!updated[dishKey]) updated[dishKey] = {};
-      updated[dishKey][field] = value;
+      updated[dishKey][field] = Number(value);
       return updated;
     });
   };
 
-  const handleLockCategory = () => {
-    alert(`Результаты по категории "${categories[category]}" закреплены.`);
-    // здесь может быть запрос на сервер в будущем
+  const handleSave = async () => {
+    const filteredSales = {};
+    for (const dish of dishes[category]) {
+      const entry = sales[dish.id] || {};
+      if (!filteredSales[category]) filteredSales[category] = {};
+      filteredSales[category][dish.id] = entry;
+    }
+
+    const payload = {
+      department_id: user.department_id,
+      date,
+      sales: filteredSales,
+      reports: {}
+    };
+
+    const res = await fetch('https://schoolstol.onrender.com/user-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      alert('Данные сохранены');
+    } else {
+      alert('Ошибка при сохранении');
+    }
   };
 
   const currentDishes = dishes[category] || [];
@@ -74,10 +97,10 @@ const SalesTab = ({ user, date }) => {
       </div>
 
       <button
-        onClick={handleLockCategory}
+        onClick={handleSave}
         className="mb-4 px-4 py-2 bg-green-500 text-white rounded"
       >
-        Закрепить {categories[category]}
+        Закрепить
       </button>
 
       <table className="w-full table-auto border">
@@ -93,9 +116,7 @@ const SalesTab = ({ user, date }) => {
               </>
             )}
             {category === 'organized' && (
-              <>
-                <th className="border px-2 py-1">Отпущено</th>
-              </>
+              <th className="border px-2 py-1">Отпущено</th>
             )}
           </tr>
         </thead>
@@ -105,9 +126,9 @@ const SalesTab = ({ user, date }) => {
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
-                {category !== 'organized' && <td className="border px-2 py-1">{entry.previousStock || 0}</td>}
                 {category !== 'organized' && (
                   <>
+                    <td className="border px-2 py-1">{entry.previousStock || 0}</td>
                     <td className="border px-2 py-1">
                       <input
                         type="number"
