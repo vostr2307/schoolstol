@@ -1,6 +1,5 @@
 // AppRouter.jsx
 import React, { useEffect, useState } from 'react';
-import App from './App';
 import AdminPanel from './AdminPanel';
 import LoginPage from './LoginPage';
 
