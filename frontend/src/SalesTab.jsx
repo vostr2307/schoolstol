@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Check } from 'lucide-react';
 
 const categories = {
   kitchen: 'Кухня',
@@ -93,78 +92,76 @@ const SalesTab = ({ user, date }) => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-2">
+      <div className="flex flex-wrap gap-2 mb-2">
         {Object.entries(categories).map(([key, label]) => (
           <button
             key={key}
             onClick={() => setCategory(key)}
-            className={`px-3 py-1 rounded text-sm ${category === key ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`px-4 py-2 rounded ${category === key ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
           >
             {label}
           </button>
         ))}
-      </div>
-
-      <div className="w-full flex justify-center mb-4">
-        <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded-full shadow hover:bg-green-600">
-          <Check size={20} />
+        <button onClick={handleSave} className="ml-auto bg-green-500 text-white px-3 py-2 rounded-full">
+          ✓
         </button>
       </div>
 
-      <table className="w-full table-auto border text-sm">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="border px-2 py-1 text-left">Название</th>
-            {category !== 'organized' && <th className="border px-2 py-1">Остатки</th>}
-            <th className="border px-2 py-1">{category !== 'organized' ? 'Приготовлено' : 'Отпущено'}</th>
-            {category !== 'organized' && (
-              <>
-                <th className="border px-2 py-1">Продано</th>
-                <th className="border px-2 py-1">Списано</th>
-              </>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {currentDishes.map(dish => {
-            const entry = sales[String(dish.id)] || {};
-            return (
-              <tr key={dish.id} className="border-b">
-                <td className="border px-2 py-1 w-1/4">{dish.name}</td>
-                {category !== 'organized' && <td className="border px-2 py-1 w-1/6">{entry.previousStock || 0}</td>}
-                <td className="border px-2 py-1 w-1/6">
+      <div className="space-y-4">
+        {currentDishes.map(dish => {
+          const entry = sales[String(dish.id)] || {};
+          return (
+            <div key={dish.id} className="border p-2 rounded shadow-sm bg-white">
+              <div className="font-semibold mb-1">{dish.name}</div>
+              {category !== 'organized' ? (
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <div className="font-bold">Остатки</div>
+                    <div>{entry.previousStock || 0}</div>
+                  </div>
+                  <div>
+                    <div className="font-bold">Приготовлено</div>
+                    <input
+                      type="number"
+                      value={entry.preparedToday || ''}
+                      onChange={e => handleChange(dish.id, 'preparedToday', e.target.value)}
+                      className="w-full border rounded px-2 py-1"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-bold">Продано</div>
+                    <input
+                      type="number"
+                      value={entry.sold || ''}
+                      onChange={e => handleChange(dish.id, 'sold', e.target.value)}
+                      className="w-full border rounded px-2 py-1"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-bold">Списано</div>
+                    <input
+                      type="number"
+                      value={entry.writtenOff || ''}
+                      onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
+                      className="w-full border rounded px-2 py-1"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="font-bold text-sm">Отпущено</div>
                   <input
                     type="number"
-                    value={category === 'organized' ? (entry.issued || '') : (entry.preparedToday || '')}
-                    onChange={e => handleChange(dish.id, category === 'organized' ? 'issued' : 'preparedToday', e.target.value)}
-                    className="w-full border rounded px-1"
+                    value={entry.issued || ''}
+                    onChange={e => handleChange(dish.id, 'issued', e.target.value)}
+                    className="w-full border rounded px-2 py-1"
                   />
-                </td>
-                {category !== 'organized' && (
-                  <>
-                    <td className="border px-2 py-1 w-1/6">
-                      <input
-                        type="number"
-                        value={entry.sold || ''}
-                        onChange={e => handleChange(dish.id, 'sold', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                    <td className="border px-2 py-1 w-1/6">
-                      <input
-                        type="number"
-                        value={entry.writtenOff || ''}
-                        onChange={e => handleChange(dish.id, 'writtenOff', e.target.value)}
-                        className="w-full border rounded px-1"
-                      />
-                    </td>
-                  </>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
