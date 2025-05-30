@@ -18,7 +18,8 @@ const SalesTab = ({ user, date }) => {
       .then(res => res.json())
       .then(data => {
         setSales(data.sales || {});
-      });
+      })
+      .catch(err => console.error('Ошибка при загрузке sales:', err));
   }, [user, date]);
 
   useEffect(() => {
@@ -27,7 +28,8 @@ const SalesTab = ({ user, date }) => {
       .then(res => res.json())
       .then(data => {
         setDishes(prev => ({ ...prev, [category]: data }));
-      });
+      })
+      .catch(err => console.error('Ошибка при загрузке dishes:', err));
   }, [user, category]);
 
   const handleChange = (dishId, field, value) => {
@@ -40,8 +42,8 @@ const SalesTab = ({ user, date }) => {
     });
   };
 
-  const currentDishes = dishes[category] || [];
-  const currentSales = sales[category] || {};
+  const currentDishes = (dishes && dishes[category]) ? dishes[category] : [];
+  const currentSales = (sales && sales[category]) ? sales[category] : {};
 
   return (
     <div>
@@ -69,7 +71,7 @@ const SalesTab = ({ user, date }) => {
         </thead>
         <tbody>
           {currentDishes.map(dish => {
-            const entry = currentSales[dish.id] || {};
+            const entry = currentSales[dish.id] || currentSales[String(dish.id)] || {};
             return (
               <tr key={dish.id}>
                 <td className="border px-2 py-1">{dish.name}</td>
