@@ -12,7 +12,6 @@ const SalesTab = ({ user, date }) => {
   const [dishes, setDishes] = useState({});
   const [category, setCategory] = useState('kitchen');
 
-  // Загрузка продаж и отчёта
   useEffect(() => {
     if (!user || !date) return;
     fetch(`https://schoolstol.onrender.com/user-data?department_id=${user.department_id}&date=${date}`)
@@ -29,15 +28,20 @@ const SalesTab = ({ user, date }) => {
       });
   }, [user, date]);
 
-  // Загрузка блюд
   useEffect(() => {
-    if (!user || !category) return;
-    fetch(`https://schoolstol.onrender.com/dishes?category=${category}&department_id=${user.department_id}`)
-      .then(res => res.json())
-      .then(data => {
-        setDishes(prev => ({ ...prev, [category]: data }));
-      });
-  }, [user, category]);
+    if (!user) return;
+    const fetchAllDishes = async () => {
+      const catKeys = Object.keys(categories);
+      const all = {};
+      for (const cat of catKeys) {
+        const res = await fetch(`https://schoolstol.onrender.com/dishes?category=${cat}&department_id=${user.department_id}`);
+        const data = await res.json();
+        all[cat] = data;
+      }
+      setDishes(all);
+    };
+    fetchAllDishes();
+  }, [user]);
 
   const handleChange = (dishId, field, value) => {
     setSales(prev => {
