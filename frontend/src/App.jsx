@@ -1,5 +1,5 @@
+// App.jsx
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import AppRouter from './AppRouter';
 
 export const DataContext = createContext();
 
@@ -12,7 +12,7 @@ const getTodayISO = () => {
   return today.toISOString().split('T')[0];
 };
 
-const App = () => {
+const App = ({ children }) => {
   const [user, setUser] = useState(null);
   const [date, setDate] = useState(getTodayISO());
   const [dishes, setDishes] = useState({});
@@ -132,7 +132,7 @@ const App = () => {
           <div className="text-sm mt-2 sm:mt-0">Дата: {new Date(date).toLocaleDateString('ru-RU')}</div>
         </header>
         <main className="p-4">
-          <AppRouter />
+          {children}
         </main>
       </div>
     </DataContext.Provider>
