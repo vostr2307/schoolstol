@@ -1,5 +1,7 @@
-// App.jsx
 import React, { useState, useEffect, createContext, useContext } from 'react';
+import SalesTab from './SalesTab';
+import ReferenceTab from './ReferenceTab';
+import ReportsTab from './ReportsTab';
 
 export const DataContext = createContext();
 
@@ -12,14 +14,20 @@ const getTodayISO = () => {
   return today.toISOString().split('T')[0];
 };
 
-const App = ({ children }) => {
-  const [user, setUser] = useState(null);
+const App = ({ user: initialUser, onLogout }) => {
+  const [user, setUser] = useState(initialUser || null);
   const [date, setDate] = useState(getTodayISO());
   const [dishes, setDishes] = useState({});
   const [data, setData] = useState({
     sales: {},
     reports: {}
   });
+  const [tab, setTab] = useState('sales');
+
+  // Подхватываем пользователя из пропсов (при логине)
+  useEffect(() => {
+    if (initialUser) setUser(initialUser);
+  }, [initialUser]);
 
   // Загрузка всех справочников блюд
   useEffect(() => {
@@ -86,7 +94,7 @@ const App = ({ children }) => {
         reports: serverData.reports || {}
       })
     });
-    // Обновим глобальный стейт (можно дополнительно сделать всплывающее окно)
+    // Обновим глобальный стейт
     setData(prev => ({
       ...prev,
       sales: newSales
@@ -112,6 +120,7 @@ const App = ({ children }) => {
     return kitchen + bakery + buffet;
   };
 
+  // --- UI с табами ---
   return (
     <DataContext.Provider value={{
       data,
@@ -131,8 +140,35 @@ const App = ({ children }) => {
           <h1 className="text-xl font-bold">Учет продаж — школстол.рф</h1>
           <div className="text-sm mt-2 sm:mt-0">Дата: {new Date(date).toLocaleDateString('ru-RU')}</div>
         </header>
-        <main className="p-4">
-          {children}
+        <nav className="flex gap-2 mt-4 mb-4">
+          <button
+            className={`px-4 py-2 rounded ${tab === 'sales' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            onClick={() => setTab('sales')}
+          >
+            Продажи
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${tab === 'reference' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            onClick={() => setTab('reference')}
+          >
+            Справочник
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${tab === 'report' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            onClick={() => setTab('report')}
+          >
+            Отчет
+          </button>
+          {onLogout && (
+            <button className="ml-auto px-4 py-2 rounded bg-red-500 text-white" onClick={onLogout}>
+              Выйти
+            </button>
+          )}
+        </nav>
+        <main className="p-4 bg-white rounded shadow min-h-[60vh]">
+          {tab === 'sales' && <SalesTab />}
+          {tab === 'reference' && <ReferenceTab />}
+          {tab === 'report' && <ReportsTab />}
         </main>
       </div>
     </DataContext.Provider>
