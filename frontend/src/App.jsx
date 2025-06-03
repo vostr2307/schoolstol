@@ -20,8 +20,8 @@ const initialReports = {
   sent: false,
 };
 
-const App = ({ children }) => {
-  const [user, setUser] = useState(null);
+const App = ({ user, onLogout, children }) => {
+  // user теперь приходит из пропсов!
   const [date, setDate] = useState(getTodayISO());
   const [dishes, setDishes] = useState({});
   const [data, setData] = useState({
@@ -70,7 +70,8 @@ const App = ({ children }) => {
       });
   }, [user, date]);
 
-  // Обновить поле отчёта
+  // Остальной код — без изменений
+
   function updateReportField(field, value) {
     setData((prev) => ({
       ...prev,
@@ -78,7 +79,6 @@ const App = ({ children }) => {
     }));
   }
 
-  // Обновить продажи (поддержка SalesTab)
   function updateSalesField(category, dishId, field, value) {
     setData((prev) => ({
       ...prev,
@@ -95,12 +95,10 @@ const App = ({ children }) => {
     }));
   }
 
-  // Сохраняем продажи по вкладке (SalesTab)
   async function saveCategorySales() {
     await saveReport();
   }
 
-  // Сохранить весь отчёт (вызывается из ReportsTab)
   async function saveReport() {
     if (!user) return;
     await fetch(`https://schoolstol.onrender.com/user-data`, {
@@ -120,7 +118,6 @@ const App = ({ children }) => {
     updateReportField("sent", true);
   }
 
-  // Подсчитать сумму продаж для нужных категорий (кухня, выпечка, буфет)
   function calculateSalesRevenue(categories = ["kitchen", "bakery", "buffet"]) {
     let sum = 0;
     for (const cat of categories) {
@@ -137,7 +134,6 @@ const App = ({ children }) => {
 
   const contextValue = {
     user,
-    setUser,
     date,
     setDate,
     dishes,
@@ -151,6 +147,8 @@ const App = ({ children }) => {
 
   return (
     <DataContext.Provider value={contextValue}>
+      {/* Здесь нужно рендерить страницы приложения: вкладки, меню и т.д. */}
+      {/* Например: */}
       {children}
     </DataContext.Provider>
   );
