@@ -1,8 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import SalesTab from "./SalesTab";
 import ReportsTab from "./ReportsTab";
-// import ReferenceTab from "./ReferenceTab"; // ← раскомментируй, если есть
-// import StatsTab from "./StatsTab"; // ← раскомментируй, если есть
+import ReferenceTab from "./ReferenceTab"; // Вкладка справочник
 
 export const DataContext = createContext();
 
@@ -27,8 +26,7 @@ const initialReports = {
 const TABS = [
   { id: "sales", label: "Продажи", icon: "🍽️" },
   { id: "report", label: "Отчёт", icon: "📄" },
-  // { id: "reference", label: "Справочник", icon: "📚" }, // ← если нужен справочник
-  // { id: "stats", label: "Статистика", icon: "📊" }, // ← если нужна статистика
+  { id: "reference", label: "Справочник", icon: "📚" },
 ];
 
 const App = ({ user, onLogout }) => {
@@ -214,11 +212,10 @@ const App = ({ user, onLogout }) => {
         <main className="flex-1 p-2 sm:p-4 max-w-4xl mx-auto w-full">
           {tab === "sales" && <SalesTab />}
           {tab === "report" && <ReportsTab />}
-          {/* {tab === "reference" && <ReferenceTab />} */}
-          {/* {tab === "stats" && <StatsTab />} */}
+          {tab === "reference" && <ReferenceTab />}
         </main>
 
-        {/* Футер (опционально) */}
+        {/* Футер */}
         <footer className="text-center text-gray-500 py-2 text-xs bg-gray-100 border-t">
           © {new Date().getFullYear()} школстол.рф — учёт питания, v1.0
         </footer>
